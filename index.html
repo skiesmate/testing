@@ -1,32 +1,48 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Decrypted Video Player</title>
+    <title>Encrypted Video Player</title>
 </head>
 <body>
     <div id="video-container"></div>
     <script>
         const videoContainer = document.getElementById('video-container');
-        const encryptedVideoId = '1PoZF9EDcEHn1EzVu0KC-VScZKj5vbqbd'; // Replace with the actual file ID
+        const encryptedVideoId = '1j5nMaxtIIqQDfmcxPNSEj-unjL6d6zgq'; // Replace with the actual ID of your encrypted video in Google Drive
 
-        // Fetch the decrypted video
-        fetch(`https://drive.google.com/uc?export=download&id=${encryptedVideoId}`)
-            .then(response => response.blob())
-            .then(blob => {
+        // XOR decryption function (replace with your actual decryption logic)
+        function xorDecrypt(encryptedData, key) {
+            const decryptedData = new Uint8Array(encryptedData.length);
+            for (let i = 0; i < encryptedData.length; i++) {
+                decryptedData[i] = encryptedData[i] ^ key;
+            }
+            return decryptedData;
+        }
+
+        // Construct the video source URL
+        const videoURL = `https://drive.google.com/uc?id=${encryptedVideoId}`;
+
+        // Create an HTML5 video element to display the decrypted video
+        const video = document.createElement('video');
+        video.controls = true;
+        video.width = 560;
+        video.height = 315;
+
+        // Fetch the encrypted video
+        fetch(videoURL)
+            .then(response => response.arrayBuffer())
+            .then(encryptedVideoData => {
+                // Decrypt the video data using XOR decryption (replace with your decryption logic)
+                const decryptionKey = 0xFF; // Replace with your encryption key
+                const decryptedData = xorDecrypt(new Uint8Array(encryptedVideoData), decryptionKey);
+                const blob = new Blob([decryptedData], { type: 'video/mp4' });
                 const url = URL.createObjectURL(blob);
 
-                // Create an HTML5 video element to display the decrypted video
-                const video = document.createElement('video');
+                // Set the video source and append it to the container
                 video.src = url;
-                video.controls = true;
-                video.width = 560;
-                video.height = 315;
-
-                // Append the video element to the container
                 videoContainer.appendChild(video);
             })
             .catch(error => {
-                console.error('Error fetching or displaying the video:', error);
+                console.error('Error fetching or decrypting the video:', error);
                 videoContainer.innerText = 'Error: ' + error.message; // Display the error message
             });
     </script>
