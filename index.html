@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Decrypted Video Player</title>
+</head>
+<body>
+    <div id="video-container"></div>
+    <script>
+        const videoContainer = document.getElementById('video-container');
+        const encryptedVideoId = '1PoZF9EDcEHn1EzVu0KC-VScZKj5vbqbd'; // Replace with the actual file ID
+
+        // Fetch the decrypted video
+        fetch(`https://drive.google.com/uc?export=download&id=${encryptedVideoId}`)
+            .then(response => response.blob())
+            .then(blob => {
+                const url = URL.createObjectURL(blob);
+
+                // Create an HTML5 video element to display the decrypted video
+                const video = document.createElement('video');
+                video.src = url;
+                video.controls = true;
+                video.width = 560;
+                video.height = 315;
+
+                // Append the video element to the container
+                videoContainer.appendChild(video);
+            })
+            .catch(error => {
+                console.error('Error fetching or displaying the video:', error);
+                videoContainer.innerText = 'Error: ' + error.message; // Display the error message
+            });
+    </script>
+</body>
+</html>
